@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/company_db
+    password: '131313'
+  liquibase:
+    change-log: classpath:db/liquibase/changelog-master.xml
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+  #sql:
+  #  init:
+  #    mode: never #remove for production or overwrite in application-prod.yml

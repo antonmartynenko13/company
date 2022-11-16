@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    username: sa
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    password: 'sa'
+  test:
+    database:
+      replace: none
+  logging:
+    level:
+      org:
+        hibernate:
+          SQL: debug
+
+  liquibase:
+    change-log: classpath:db/liquibase/changelog-master.xml
+  sql:
+    init:
+      mode: always #remove for production or overwrite in application-prod.yml
