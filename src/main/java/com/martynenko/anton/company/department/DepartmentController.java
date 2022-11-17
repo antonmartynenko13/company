@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/departments")
+@RequestMapping("/api/departments/")
 public class DepartmentController {
 
   private DepartmentService departmentService;
@@ -49,9 +49,9 @@ public class DepartmentController {
     return ResponseEntity.created(URI.create(request.getRequestURI() + created.id())).build();
   }
 
-  @PutMapping("")
-  public ResponseEntity<DepartmentDTO> update(@RequestBody DepartmentDTO updated){
-    return ResponseEntity.ok(departmentService.update(updated).toDTO());
+  @PutMapping("/{id}")
+  public ResponseEntity<DepartmentDTO> update(@PathVariable Long id, @RequestBody DepartmentDTO updated){
+    return ResponseEntity.ok(departmentService.update(id, updated).toDTO());
   }
 
   @GetMapping("/{id}")

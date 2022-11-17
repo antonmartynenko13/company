@@ -25,14 +25,14 @@ public class DbUserService implements UserService{
   @Override
   public User create(UserDTO newUser) {
     Department department = departmentService.get(newUser.departmentId());
-    User user = new User(newUser, department);
+    User user = newUser.createInstance(department);
     return userRepository.save(user);
   }
 
   @Override
-  public User update(UserDTO updated) {
+  public User update(Long id, UserDTO updated) {
     Department department = departmentService.get(updated.departmentId());
-    User user = get(updated.id());
+    User user = get(id);
     return userRepository.save(user.update(updated, department));
   }
 

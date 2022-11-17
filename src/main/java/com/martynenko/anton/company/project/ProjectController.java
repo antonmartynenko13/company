@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectController {
-
   private final ProjectService projectService;
 
   @Autowired
@@ -49,9 +48,9 @@ public class ProjectController {
     return ResponseEntity.created(URI.create(request.getRequestURI() + created.id())).build();
   }
 
-  @PutMapping("")
-  public ResponseEntity<ProjectDTO> update(@RequestBody ProjectDTO updated){
-    return ResponseEntity.ok(projectService.update(updated).toDTO());
+  @PutMapping("/{id}")
+  public ResponseEntity<ProjectDTO> update(@PathVariable Long id, @RequestBody ProjectDTO updated){
+    return ResponseEntity.ok(projectService.update(id, updated).toDTO());
   }
 
   @GetMapping("/{id}")

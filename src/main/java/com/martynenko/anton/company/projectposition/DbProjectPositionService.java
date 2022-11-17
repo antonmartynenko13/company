@@ -32,16 +32,16 @@ public class DbProjectPositionService implements ProjectPositionService{
     User user = userService.get(newProjectPosition.userId());
     Project project = projectService.get(newProjectPosition.projectId());
 
-    ProjectPosition projectPosition = new ProjectPosition(newProjectPosition, user, project);
+    ProjectPosition projectPosition = newProjectPosition.createInstance(user, project);
     return projectPositionRepository.save(projectPosition);
   }
 
   @Override
-  public ProjectPosition update(ProjectPositionDTO updated) {
+  public ProjectPosition update(Long id, ProjectPositionDTO updated) {
     User user = userService.get(updated.userId());
     Project project = projectService.get(updated.projectId());
 
-    ProjectPosition projectPosition = get(updated.id());
+    ProjectPosition projectPosition = get(id);
     return projectPositionRepository.save(projectPosition.update(updated, user, project));
   }
 

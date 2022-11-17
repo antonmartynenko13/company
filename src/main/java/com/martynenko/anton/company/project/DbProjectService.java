@@ -19,12 +19,12 @@ public class DbProjectService implements ProjectService{
 
   @Override
   public Project create(ProjectDTO newProject) {
-    return projectRepository.save(new Project(newProject));
+    return projectRepository.save(newProject.createInstance());
   }
 
   @Override
-  public Project update(ProjectDTO updated) {
-    return projectRepository.save(get(updated.id()).update(updated));
+  public Project update(Long id, ProjectDTO updated) {
+    return projectRepository.save(get(id).update(updated));
   }
 
   @Override

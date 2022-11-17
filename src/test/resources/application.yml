@@ -1,8 +1,11 @@
 spring:
   datasource:
     username: sa
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
     password: 'sa'
+    spring:
+      jpa:
+
   test:
     database:
       replace: none
@@ -16,3 +19,8 @@ spring:
   sql:
     init:
       mode: always #remove for production or overwrite in application-prod.yml
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    hibernate:
+      ddl-auto: none

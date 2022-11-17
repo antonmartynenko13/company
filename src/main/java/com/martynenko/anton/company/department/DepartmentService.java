@@ -6,7 +6,7 @@ public interface DepartmentService {
 
   Department create(DepartmentDTO newDepartment);
 
-  Department update(DepartmentDTO updated);
+  Department update(Long id, DepartmentDTO updated);
 
   Department get(Long id);
 

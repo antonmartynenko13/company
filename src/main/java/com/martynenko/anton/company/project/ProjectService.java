@@ -8,7 +8,7 @@ public interface ProjectService {
 
   Project create(ProjectDTO newProject);
 
-  Project update(ProjectDTO updated);
+  Project update(Long id, ProjectDTO updated);
 
   Project get(Long id);
   Collection<Project> listAll();

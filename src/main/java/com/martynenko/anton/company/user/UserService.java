@@ -6,7 +6,7 @@ public interface UserService {
 
   User create(UserDTO newUser);
 
-  User update(UserDTO updated);
+  User update(Long id, UserDTO updated);
 
   User get(Long id);
   Collection<User> listAll();

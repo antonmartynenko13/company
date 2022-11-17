@@ -6,7 +6,7 @@ public interface ProjectPositionService {
 
   ProjectPosition create(ProjectPositionDTO newProjectPosition);
 
-  ProjectPosition update(ProjectPositionDTO updated);
+  ProjectPosition update(Long id, ProjectPositionDTO updated);
 
   ProjectPosition get(Long id);
 

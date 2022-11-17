@@ -54,9 +54,9 @@ public class UserController {
     return ResponseEntity.created(URI.create(request.getRequestURI() + created.id())).build();
   }
 
-  @PutMapping("")
-  public ResponseEntity<UserDTO> update(@RequestBody UserDTO updated){
-    return ResponseEntity.ok(userService.update(updated).toDTO());
+  @PutMapping("/{id}")
+  public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO updated){
+    return ResponseEntity.ok(userService.update(id, updated).toDTO());
   }
 
   @GetMapping("/{id}")

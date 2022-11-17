@@ -1,6 +1,7 @@
 package com.martynenko.anton.company.project;
 
 import java.time.LocalDate;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,8 +21,12 @@ public class Project {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(unique = true, nullable = false)
   private String title;
+  @Column(nullable = false)
   private LocalDate startDate;
+
+
   private LocalDate endDate;
 
   public Project(ProjectDTO projectDTO) {

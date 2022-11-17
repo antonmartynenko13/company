@@ -27,22 +27,23 @@ public class ProjectPosition {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
   @ManyToOne
-  @JoinColumn(name = "project_id")
+  @JoinColumn(name = "project_id", nullable = false)
   private Project project;
 
-  @Column(name = "position_start_date")
+  @Column(name = "position_start_date", nullable = false)
   private LocalDate positionStartDate;
 
   @Column(name = "position_end_date")
   private LocalDate positionEndDate;
 
-  @Column(name = "position_title")
+  @Column(name = "position_title", nullable = false)
   private String positionTitle;
 
+  @Column(nullable = false)
   private String occupation;
 
   public ProjectPosition(ProjectPositionDTO projectPositionDTO, User user, Project project) {

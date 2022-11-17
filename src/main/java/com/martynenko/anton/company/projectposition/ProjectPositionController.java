@@ -48,9 +48,9 @@ public class ProjectPositionController {
     return ResponseEntity.created(URI.create(request.getRequestURI() + created.id())).build();
   }
 
-  @PutMapping("")
-  public ResponseEntity<ProjectPositionDTO> update(@RequestBody ProjectPositionDTO updated){
-    return ResponseEntity.ok(projectPositionService.update(updated).toDTO());
+  @PutMapping("/{id}")
+  public ResponseEntity<ProjectPositionDTO> update(@PathVariable Long id, @RequestBody ProjectPositionDTO updated){
+    return ResponseEntity.ok(projectPositionService.update(id, updated).toDTO());
   }
 
   @GetMapping("/{id}")

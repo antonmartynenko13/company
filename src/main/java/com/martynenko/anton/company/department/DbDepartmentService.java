@@ -15,12 +15,13 @@ public class DbDepartmentService implements DepartmentService{
 
   @Override
   public Department create(DepartmentDTO newDepartment) {
-    return departmentRepository.save(new Department(newDepartment));
+    //return departmentRepository.save(new Department(newDepartment));
+    return departmentRepository.save(newDepartment.createInstance());
   }
 
   @Override
-  public Department update(DepartmentDTO updated) {
-    return departmentRepository.save(get(updated.id()).update(updated));
+  public Department update(Long id, DepartmentDTO updated) {
+    return departmentRepository.save(get(id).update(updated));
   }
 
   @Override
