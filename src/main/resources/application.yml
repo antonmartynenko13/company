@@ -5,10 +5,21 @@ spring:
     password: '131313'
   liquibase:
     change-log: classpath:db/liquibase/changelog-master.xml
-
+  logging:
+    level: debug
   jpa:
     hibernate:
       ddl-auto: none
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: 00b6164ee79b6ad66291
+            clientSecret: 0bff558e97a32661c227ee04843ab91cac849ce8
+          google:
+            clientId: 474399079273-ndqq064casj84chujdt59frk16ptj6h5.apps.googleusercontent.com
+            clientSecret: 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
   #sql:
   #  init:
   #    mode: never #remove for production or overwrite in application-prod.yml
