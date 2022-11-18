@@ -11,10 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
-import org.springframework.test.context.event.annotation.AfterTestMethod;
+
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.Test;
@@ -25,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false) //disable security
 @Transactional
 class DepartmentControllerTest {
   final String contextPath = "/api/departments/";
@@ -37,6 +35,7 @@ class DepartmentControllerTest {
 
   @Autowired
   DepartmentRepository departmentRepository;
+
 
   @Test
   void onCreateShouldReturnCreatedWithLocationHeaderOn() throws Exception {
