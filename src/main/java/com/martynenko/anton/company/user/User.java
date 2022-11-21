@@ -1,6 +1,8 @@
 package com.martynenko.anton.company.user;
 
 import com.martynenko.anton.company.department.Department;
+import com.martynenko.anton.company.projectposition.ProjectPosition;
+import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,9 +23,9 @@ import lombok.ToString;
 @Entity
 @Table(name = "users") //user is reserved word
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "projectPosition")
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "projectPosition")
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +50,9 @@ public class User {
   @ManyToOne
   @JoinColumn(name = "department_id")
   private Department department;
+
+  @OneToOne(mappedBy = "user")
+  private ProjectPosition projectPosition;
 
   public User(UserDTO userDTO, Department department) {
     this.firstName = userDTO.firstName();

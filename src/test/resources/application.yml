@@ -5,7 +5,6 @@ spring:
     password: 'sa'
     spring:
       jpa:
-
   test:
     database:
       replace: none

@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS project_position;
+DROP TABLE IF EXISTS project;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS department;
+
 CREATE TABLE department (
   id SERIAL PRIMARY KEY,
   title text NOT NULL UNIQUE
@@ -27,5 +32,6 @@ CREATE TABLE project_position (
   position_start_date DATE NOT NULL,
   position_end_date DATE,
   position_title text NOT NULL,
-  occupation text NOT NULL
+  occupation text NOT NULL,
+  UNIQUE(id, user_id, project_id)
 );

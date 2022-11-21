@@ -1,8 +1,10 @@
 package com.martynenko.anton.company.user;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -14,23 +16,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.martynenko.anton.company.department.Department;
 import com.martynenko.anton.company.department.DepartmentDTO;
 import com.martynenko.anton.company.department.DepartmentRepository;
+import com.martynenko.anton.company.project.Project;
 import com.martynenko.anton.company.project.ProjectDTO;
 import com.martynenko.anton.company.project.ProjectRepository;
+import com.martynenko.anton.company.projectposition.ProjectPositionDTO;
+import com.martynenko.anton.company.projectposition.ProjectPositionRepository;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.Map;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false) //disable security
 @Transactional
 class UserControllerTest {
   final String contextPath = "/api/users/";
@@ -41,10 +50,19 @@ class UserControllerTest {
   MockMvc mockMvc;
 
   @Autowired
+  UserController userController;
+
+  @Autowired
   UserRepository userRepository;
 
   @Autowired
   DepartmentRepository departmentRepository;
+
+  @Autowired
+  ProjectRepository projectRepository;
+
+  @Autowired
+  ProjectPositionRepository projectPositionRepository;
 
   @Test
   void onCreateShouldReturnCreatedWithLocationHeaderOn() throws Exception {
@@ -382,6 +400,245 @@ class UserControllerTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
         .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").isNotEmpty());
+  }
+
+  /*
+   * Need this workaround because of a slightly unpredictable behavior of transactions in h2
+   * */
+  @Test
+  @Transactional(propagation = Propagation.NEVER)
+  void onGetAvailableWithAvailableUserShouldReturnArrayOfUserDetailsWithAvailableFrom()
+      throws Exception {
+    createDepartmentUserProjectAndPosition(null, null);
+
+    this.mockMvc.perform(get(contextPath + "/available"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].user_details").isNotEmpty())
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].available_from").value(LocalDate.now().toString()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].available_to").doesNotExist());
+
+    //clear repositories
+    clearRepos();
+  }
+
+  /*
+   * Need this workaround because of a slightly unpredictable behavior of transactions in h2
+   * */
+  @Test
+  @Transactional(propagation = Propagation.NEVER)
+  void onGetAvailableWithBusyInFutureUserShouldReturnArrayOfUserDetailsWithAvailableFromAndAvailableTo()
+      throws Exception {
+    LocalDate userIsBusyFrom = LocalDate.now().plusDays(2);
+    LocalDate userIsBusyTo = LocalDate.now().plusDays(7);
+    createDepartmentUserProjectAndPosition(userIsBusyFrom, userIsBusyTo);
+
+    this.mockMvc.perform(get(contextPath + "/available")
+                          .param("period", "9"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].user_details").isNotEmpty())
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].available_from").value(LocalDate.now().toString()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].available_to").value(userIsBusyFrom.toString()));
+
+    //clear repositories
+    clearRepos();
+  }
+
+  /*
+   * Need this workaround because of a slightly unpredictable behavior of transactions in h2
+   * */
+  @Test
+  @Transactional(propagation = Propagation.NEVER)
+  void onGetAvailableWithAvailableInFutureUserShouldReturnArrayOfUserDetailsWithAvailableFrom()
+      throws Exception {
+    LocalDate userIsBusyFrom = LocalDate.now().minusDays(5);
+    LocalDate userIsBusyTo = LocalDate.now().plusDays(2);
+    createDepartmentUserProjectAndPosition(userIsBusyFrom, userIsBusyTo);
+
+    this.mockMvc.perform(get(contextPath + "/available")
+            .param("period", "9"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].user_details").isNotEmpty())
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].available_from").value(userIsBusyTo.toString()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$[0].available_to").doesNotExist());
+
+    //clear repositories
+    clearRepos();
+  }
+
+
+  @Test
+  void onImportShouldReturnOk() throws Exception {
+    long departmentId = departmentRepository.saveAndFlush(new DepartmentDTO(
+        null,
+        "Some department"
+    ).createInstance()).getId();
+
+    String header = "firstName,"
+        + "lastName,"
+        + "email,"
+        + "password,"
+        + "jobTitle,"
+        + "departmentId";
+
+    String value = "Firstname1,"
+        + "Lastname2,"
+        + "email@domain.com,"
+        + "password,"
+        + "Title 1,"
+        + departmentId;
+
+    String fileName = "file";
+
+    MockMultipartFile importFile
+        = new MockMultipartFile(
+        fileName,
+        fileName + ".csv",
+        MediaType.TEXT_PLAIN_VALUE,
+        (header + "\n" + value).getBytes()
+    );
+
+    mockMvc.perform(multipart(contextPath + "import").file(importFile))
+        .andDo(print())
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void onImportWithMissingRelationShouldReturnNotFound() throws Exception {
+
+    String header = "firstName,"
+        + "lastName,"
+        + "email,"
+        + "password,"
+        + "jobTitle,"
+        + "departmentId";
+
+    String value = "Firstname1,"
+        + "Lastname2,"
+        + "email@domain.com,"
+        + "password,"
+        + "Title 1,"
+        //no such department
+        + 100;
+
+    String fileName = "file";
+
+    MockMultipartFile importFile
+        = new MockMultipartFile(
+        fileName,
+        fileName + ".csv",
+        MediaType.TEXT_PLAIN_VALUE,
+        (header + "\n" + value).getBytes()
+    );
+
+    mockMvc.perform(multipart(contextPath + "import").file(importFile))
+        .andDo(print())
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void onImportWithDuplicatesShouldReturnBadRequest() throws Exception {
+    Department department
+        = departmentRepository.saveAndFlush(new DepartmentDTO(
+        null,
+        "Some department"
+    ).createInstance());
+
+    User user = userRepository.saveAndFlush(new UserDTO(
+        null,
+        "First",
+        "Last",
+        "email@domain.com",
+        "PASSWORD",
+        "employee",
+        department.getId()
+    ).createInstance(department));
+
+    String header = "firstName,"
+        + "lastName,"
+        + "email,"
+        + "password,"
+        + "jobTitle,"
+        + "departmentId";
+
+    String value = "Firstname1,"
+        + "Lastname2,"
+        //duplication of unique value
+        + "email@domain.com,"
+        + "password,"
+        + "Title 1,"
+        + department.getId();
+
+    String fileName = "file";
+
+    MockMultipartFile importFile
+        = new MockMultipartFile(
+        fileName,
+        fileName + ".csv",
+        MediaType.TEXT_PLAIN_VALUE,
+        (header + "\n" + value).getBytes()
+    );
+
+    mockMvc.perform(multipart(contextPath + "import").file(importFile))
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  void createDepartmentUserProjectAndPosition(LocalDate projectStartDate, LocalDate projectEndDate) {
+
+    Department department
+        = departmentRepository.saveAndFlush(new DepartmentDTO(
+        null,
+        "Some department"
+    ).createInstance());
+
+    User user = userRepository.saveAndFlush(new UserDTO(
+        null,
+        "First",
+        "Last",
+        "email@domain.com",
+        "PASSWORD",
+        "employee",
+        department.getId()
+    ).createInstance(department));
+
+    //if startdate is not null so create dummy project
+    if (projectStartDate != null) {
+      Project project
+          = projectRepository.saveAndFlush(new ProjectDTO(
+          null,
+          "Project1",
+          projectStartDate,
+          projectEndDate)
+          .createInstance());
+
+      projectPositionRepository.saveAndFlush(
+          new ProjectPositionDTO(
+              null,
+              user.getId(),
+              project.getId(),
+              projectStartDate,
+              projectEndDate,
+              "Some title",
+              "Some occupation"
+          ).createInstance(user, project)
+      );
+    }
+  }
+
+  void clearRepos(){
+    projectPositionRepository.deleteAll();
+    userRepository.deleteAll();
+    projectRepository.deleteAll();
+    departmentRepository.deleteAll();
   }
 
 }

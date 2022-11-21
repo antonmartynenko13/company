@@ -1,6 +1,7 @@
 package com.martynenko.anton.company.user;
 
 import java.util.Collection;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -12,4 +13,8 @@ public interface UserService {
   Collection<User> listAll();
 
   void delete(Long id);
+
+  Collection<User> listAvailable(long period);
+
+  void create(Collection<UserDTO> newUsers);
 }

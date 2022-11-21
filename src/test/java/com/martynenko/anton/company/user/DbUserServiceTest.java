@@ -5,19 +5,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.martynenko.anton.company.csv.CsvHelper;
 import com.martynenko.anton.company.department.DbDepartmentService;
 import com.martynenko.anton.company.department.Department;
 import com.martynenko.anton.company.department.DepartmentDTO;
 import com.martynenko.anton.company.department.DepartmentRepository;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class DbUserServiceTest {
   private UserRepository repository = mock(UserRepository.class);
 
   private DbDepartmentService departmentService = mock(DbDepartmentService.class);
+  private CsvHelper<UserDTO> csvHelper = mock(CsvHelper.class);
   private DbUserService service = new DbUserService(repository, departmentService);
 
   long departmentId = 1;
@@ -75,5 +80,27 @@ class DbUserServiceTest {
     when(repository.findById(id)).thenReturn(Optional.of(entity));
     service.delete(id);
     assertTrue(true);
+  }
+
+  @Test
+  void onListAvailableShouldReturnNotEmptyCollection() {
+    int period = 0;
+    LocalDate periodStartDate = LocalDate.now();
+    LocalDate periodEndDate = LocalDate.now().plusDays(period);
+    when(repository.findAvailable(periodStartDate, periodEndDate))
+        .thenReturn(List.of(entity));
+
+    assertThat(service.listAvailable(period)).isNotEmpty();
+  }
+
+  @Test
+  void onListAvailableShouldReturnEmptyCollection() {
+    int period = 0;
+    LocalDate periodStartDate = LocalDate.now();
+    LocalDate periodEndDate = LocalDate.now().plusDays(period);
+    when(repository.findAvailable(periodStartDate, periodEndDate))
+        .thenReturn(Collections.EMPTY_LIST);
+
+    assertThat(service.listAvailable(period)).isEmpty();
   }
 }
