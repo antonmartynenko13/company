@@ -83,4 +83,8 @@ public class User {
     return this;
   }
 
+  public String getFullName() {
+    return String.format("%s %s", this.getFirstName(), this.getLastName());
+  }
+
 }

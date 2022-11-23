@@ -1,30 +1,16 @@
 package com.martynenko.anton.company.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.martynenko.anton.company.department.Department;
-import com.martynenko.anton.company.project.Project;
-import com.martynenko.anton.company.projectposition.ProjectPosition;
-import java.io.Serializable;
 import java.util.Objects;
-import lombok.NoArgsConstructor;
 
 public record UserDTO(Long id,
-                      String firstName,
-                      String lastName,
-                      String email,
-                      String password,
-                      String jobTitle,
-                      Long departmentId) {
-
-  /*Need this crutch to use record in csv readers until they support it*/
-  UserDTO() {
-    this(0L,
-        "",
-        "",
-        "",
-        "",
-        "",
-        0L);
-  }
+                      @JsonProperty("firstName") String firstName,
+                      @JsonProperty("lastName") String lastName,
+                      @JsonProperty("email") String email,
+                      @JsonProperty("password") String password,
+                      @JsonProperty("jobTitle") String jobTitle,
+                      @JsonProperty("departmentId") Long departmentId) {
 
   public UserDTO {
     Objects.requireNonNull(firstName);

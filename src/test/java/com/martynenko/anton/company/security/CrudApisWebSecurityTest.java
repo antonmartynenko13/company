@@ -1,4 +1,4 @@
-package com.martynenko.anton.company;
+package com.martynenko.anton.company.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -16,16 +16,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class WebSecurityTest {
+class CrudApisWebSecurityTest {
   static List<String> crudContexts = List.of(
       "/api/departments/",
-      "/api/projects/",
+      "/api/projects.csv/",
       "/api/users/",
       "/api/project-positions/"
   );
@@ -88,5 +86,6 @@ public class WebSecurityTest {
           .getStatus()).isNotEqualTo(HttpStatus.FORBIDDEN.value());
     }
   }
+
 
 }

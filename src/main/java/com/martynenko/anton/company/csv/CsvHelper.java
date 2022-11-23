@@ -18,18 +18,25 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class CsvHelper<T> {
 
-  public Collection<T> readAll(MultipartFile file, Class<T> dtoType) {
+  public Collection<T> readAll(InputStream inputStream, Class<T> dtoType) {
     CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
     CsvMapper mapper = new CsvMapper();
+    mapper.findAndRegisterModules(); //for java 8 types compatibility
     try(BufferedReader fileReader = new BufferedReader(
-        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+        new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
       MappingIterator<T> readValues
           = mapper.readerFor(dtoType).with(bootstrapSchema).readValues(fileReader);
       return readValues.readAll();
 
-    } catch (UnsupportedEncodingException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public Collection<T> readAll(MultipartFile file, Class<T> dtoType) {
+    try {
+      return readAll(file.getInputStream(), dtoType);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -1,28 +1,21 @@
 package com.martynenko.anton.company.csv;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collection;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 class CsvHelperTest {
 
-  @ToString
-  final static class Dto {
-    private final String value1;
-    private final String value2;
-
-    public Dto(@JsonProperty("value1") String value1, @JsonProperty("value2") String value2) {
-      this.value1 = value1;
-      this.value2 = value2;
+  record DTO(@JsonProperty("value1") String value1,
+             @JsonProperty("value2") String value2) {
+    public DTO {
+      Objects.requireNonNull(value1);
+      Objects.requireNonNull(value2);
     }
   }
 
@@ -34,13 +27,13 @@ class CsvHelperTest {
       "value1, value2\nSome dummy value1,Some dummy value2".getBytes()
   );
 
-  CsvHelper<Dto> csvHelper = new CsvHelper<>();
+  CsvHelper<DTO> csvHelper = new CsvHelper<>();
 
   @Test
   void shouldReturnNotEmptyCollectionOfDto() {
-    Collection<Dto> dtos = csvHelper.readAll(file, Dto.class);
+    Collection<DTO> dtos = csvHelper.readAll(file, DTO.class);
     assertThat(dtos).hasSize(1);
-    Dto dto = dtos.iterator().next();
+    DTO dto = dtos.iterator().next();
     assertThat(dto.value1).isEqualTo("Some dummy value1");
     assertThat(dto.value2).isEqualTo("Some dummy value2");
   }

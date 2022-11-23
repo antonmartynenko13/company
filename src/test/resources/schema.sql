@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS project_position;
 DROP TABLE IF EXISTS project;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS report;
 
 CREATE TABLE department (
   id SERIAL PRIMARY KEY,
@@ -34,4 +35,14 @@ CREATE TABLE project_position (
   position_title text NOT NULL,
   occupation text NOT NULL,
   UNIQUE(id, user_id, project_id)
+);
+
+--CREATE TYPE report_type_enum AS ENUM ('WORKLOAD', 'AVAILABILITY');
+
+CREATE TABLE report (
+  id SERIAL PRIMARY KEY,
+  --report_type report_type_enum NOT NULL,
+  report_type text NOT NULL,
+  binary_data bytea NOT NULL,
+  creation_date DATE default current_date
 );
