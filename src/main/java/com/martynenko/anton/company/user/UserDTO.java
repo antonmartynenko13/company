@@ -8,7 +8,6 @@ public record UserDTO(Long id,
                       @JsonProperty("firstName") String firstName,
                       @JsonProperty("lastName") String lastName,
                       @JsonProperty("email") String email,
-                      @JsonProperty("password") String password,
                       @JsonProperty("jobTitle") String jobTitle,
                       @JsonProperty("departmentId") Long departmentId) {
 
@@ -16,7 +15,6 @@ public record UserDTO(Long id,
     Objects.requireNonNull(firstName);
     Objects.requireNonNull(lastName);
     Objects.requireNonNull(email);
-    Objects.requireNonNull(password);
     Objects.requireNonNull(jobTitle);
     Objects.requireNonNull(departmentId);
   }

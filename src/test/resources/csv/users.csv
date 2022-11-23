@@ -1,10 +1,10 @@
-firstName,lastName,email,password,jobTitle,departmentId
-Firstname1,Lastname1,email1@gmail.com1,pass1,Job title 1,1
-Firstname2,Lastname2,email2@gmail.com,pass2,Job title 2,1
-Firstname3,Lastname3,email3@gmail.com,pass3,Job title 3,1
-Firstname4,Lastname4,email4@gmail.com,pass4,Job title 4,2
-Firstname5,Lastname5,email5@gmail.com,pass5,Job title 5,2
-Firstname6,Lastname6,email6@gmail.com,pass6,Job title 6,2
-Firstname7,Lastname7,email7@gmail.com,pass7,Job title 7,3
-Firstname8,Lastname8,email8@gmail.com,pass8,Job title 8,3
-Firstname9,Lastname9,email9@gmail.com,pass9,Job title 9,3
+firstName,lastName,email,jobTitle,departmentId
+Firstname1,Lastname1,email1@gmail.com1,Job title 1,1
+Firstname2,Lastname2,email2@gmail.com,Job title 2,1
+Firstname3,Lastname3,email3@gmail.com,Job title 3,1
+Firstname4,Lastname4,email4@gmail.com,Job title 4,2
+Firstname5,Lastname5,email5@gmail.com,Job title 5,2
+Firstname6,Lastname6,email6@gmail.com,Job title 6,2
+Firstname7,Lastname7,email7@gmail.com,Job title 7,3
+Firstname8,Lastname8,email8@gmail.com,Job title 8,3
+Firstname9,Lastname9,email9@gmail.com,Job title 9,3

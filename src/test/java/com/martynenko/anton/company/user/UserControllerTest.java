@@ -71,7 +71,6 @@ class UserControllerTest {
         "firstName", "First",
         "lastName", "Last",
         "email", "email@domain.com",
-        "password", "PASSWORD",
         "jobTitle", "employee",
         "departmentId", String.valueOf(departmentId)
     );
@@ -85,7 +84,7 @@ class UserControllerTest {
   }
 
   @Test
-  void onCreateWithDuplicationShouldReturnBadRequest() throws Exception {
+  void onCreateWithDuplicationShouldReturnConflict() throws Exception {
     Department department = departmentRepository.save(new DepartmentDTO(null,"Department1").createInstance());
 
     userRepository.save(new UserDTO(
@@ -93,7 +92,6 @@ class UserControllerTest {
         "First",
         "Last",
         "email@domain.com",
-        "PASSWORD",
         "employee",
         department.getId()
         ).createInstance(department));
@@ -104,7 +102,6 @@ class UserControllerTest {
         "lastName", "Last2",
         //email is unique
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         "departmentId", String.valueOf(department.getId())
     );
@@ -113,7 +110,7 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
   }
 
   @Test
@@ -124,14 +121,14 @@ class UserControllerTest {
         "firstName", "First2",
         //no last name
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         "departmentId", String.valueOf(department.getId())
     );
 
     this.mockMvc.perform(post(contextPath)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(this.mapper.writeValueAsString(payloadMap)))
+            .content(this.mapper.writeValueAsString(payloadMap))
+            )
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -144,7 +141,6 @@ class UserControllerTest {
         "firstName", "First2",
         "lastName", "Last2",
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         //no such department
         "departmentId", "100"
@@ -166,7 +162,6 @@ class UserControllerTest {
         "First",
         "Last",
         "email@domain.com",
-        "PASSWORD",
         "employee",
         department.getId()
     ).createInstance(department)).getId();
@@ -175,7 +170,6 @@ class UserControllerTest {
         "firstName", "First2",
         "lastName", "Last2",
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         "departmentId", String.valueOf(department.getId())
     );
@@ -196,7 +190,7 @@ class UserControllerTest {
 
   @Test
   @Transactional(propagation = Propagation.NEVER)
-  void onUpdateWithDuplicationShouldReturnBadRequest() throws Exception {
+  void onUpdateWithDuplicationShouldReturnConflict() throws Exception {
     Department department = departmentRepository.save(new DepartmentDTO(null,"Department1").createInstance());
 
     userRepository.save(new UserDTO(
@@ -204,7 +198,6 @@ class UserControllerTest {
         "First",
         "Last",
         "email@domain.com",
-        "PASSWORD",
         "employee",
         department.getId()
     ).createInstance(department)).getId();
@@ -215,7 +208,6 @@ class UserControllerTest {
         "Last2",
         //another email
         "email2@domain.com",
-        "PASSWORD2",
         "employee2",
         department.getId()
     ).createInstance(department)).getId();
@@ -225,7 +217,6 @@ class UserControllerTest {
         "lastName", "Last2",
         //duplication
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         "departmentId", String.valueOf(department.getId())
     );
@@ -234,7 +225,7 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
 
     userRepository.deleteAll();
     departmentRepository.deleteAll();
@@ -249,7 +240,6 @@ class UserControllerTest {
         "First2",
         "Last2",
         "email@domain.com",
-        "PASSWORD2",
         "employee2",
         department.getId()
     ).createInstance(department)).getId();
@@ -258,7 +248,6 @@ class UserControllerTest {
         "firstName", "First2",
         //no lastname
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         "departmentId", String.valueOf(department.getId())
     );
@@ -279,7 +268,6 @@ class UserControllerTest {
         "First2",
         "Last2",
         "email@domain.com",
-        "PASSWORD2",
         "employee2",
         department.getId()
     ).createInstance(department)).getId();
@@ -288,7 +276,6 @@ class UserControllerTest {
         "firstName", "First2",
         "lastName", "Last2",
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         //no such department
         "departmentId", "100"
@@ -309,7 +296,6 @@ class UserControllerTest {
         "firstName", "First2",
         "lastName", "Last2",
         "email", "email@domain.com",
-        "password", "PASSWORD2",
         "jobTitle", "employee2",
         "departmentId", String.valueOf(department.getId())
     );
@@ -330,7 +316,6 @@ class UserControllerTest {
         "First2",
         "Last2",
         "email@domain.com",
-        "PASSWORD2",
         "employee2",
         department.getId()
     ).createInstance(department)).getId();
@@ -360,7 +345,6 @@ class UserControllerTest {
         "First2",
         "Last2",
         "email@domain.com",
-        "PASSWORD2",
         "employee2",
         department.getId()
     ).createInstance(department)).getId();
@@ -389,7 +373,6 @@ class UserControllerTest {
         "First2",
         "Last2",
         "email@domain.com",
-        "PASSWORD2",
         "employee2",
         department.getId()
     ).createInstance(department));
@@ -485,14 +468,12 @@ class UserControllerTest {
     String header = "firstName,"
         + "lastName,"
         + "email,"
-        + "password,"
         + "jobTitle,"
         + "departmentId";
 
     String value = "Firstname1,"
         + "Lastname2,"
         + "email@domain.com,"
-        + "password,"
         + "Title 1,"
         + departmentId;
 
@@ -517,14 +498,12 @@ class UserControllerTest {
     String header = "firstName,"
         + "lastName,"
         + "email,"
-        + "password,"
         + "jobTitle,"
         + "departmentId";
 
     String value = "Firstname1,"
         + "Lastname2,"
         + "email@domain.com,"
-        + "password,"
         + "Title 1,"
         //no such department
         + 100;
@@ -545,7 +524,7 @@ class UserControllerTest {
   }
 
   @Test
-  void onImportWithDuplicatesShouldReturnBadRequest() throws Exception {
+  void onImportWithDuplicatesShouldReturnConflict() throws Exception {
     Department department
         = departmentRepository.saveAndFlush(new DepartmentDTO(
         null,
@@ -557,7 +536,6 @@ class UserControllerTest {
         "First",
         "Last",
         "email@domain.com",
-        "PASSWORD",
         "employee",
         department.getId()
     ).createInstance(department));
@@ -565,7 +543,6 @@ class UserControllerTest {
     String header = "firstName,"
         + "lastName,"
         + "email,"
-        + "password,"
         + "jobTitle,"
         + "departmentId";
 
@@ -573,7 +550,6 @@ class UserControllerTest {
         + "Lastname2,"
         //duplication of unique value
         + "email@domain.com,"
-        + "password,"
         + "Title 1,"
         + department.getId();
 
@@ -589,7 +565,7 @@ class UserControllerTest {
 
     mockMvc.perform(multipart(contextPath + "import").file(importFile))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
   }
 
   void createDepartmentUserProjectAndPosition(LocalDate projectStartDate, LocalDate projectEndDate) {
@@ -605,7 +581,6 @@ class UserControllerTest {
         "First",
         "Last",
         "email@domain.com",
-        "PASSWORD",
         "employee",
         department.getId()
     ).createInstance(department));

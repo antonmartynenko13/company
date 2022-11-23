@@ -61,7 +61,7 @@ class ProjectControllerTest {
   }
 
   @Test
-  void onCreateWithDuplicationShouldReturnBadRequest() throws Exception {
+  void onCreateWithDuplicationShouldReturnConflict() throws Exception {
     projectRepository.save(new ProjectDTO(null,"Project1", LocalDate.now(), LocalDate.now()).createInstance());
 
     //duplication of unique title
@@ -74,7 +74,7 @@ class ProjectControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
   }
 
   @Test
@@ -120,7 +120,7 @@ class ProjectControllerTest {
 
   @Test
   @Transactional(propagation = Propagation.NEVER)
-  void onUpdateWithDuplicationShouldReturnBadRequest() throws Exception {
+  void onUpdateWithDuplicationShouldReturnConflict() throws Exception {
     long id = projectRepository.save(new ProjectDTO(null,"Project1", LocalDate.now(), LocalDate.now())
         .createInstance()).getId();
     projectRepository.save(new ProjectDTO(null,"Project2", LocalDate.now(), LocalDate.now())
@@ -139,7 +139,7 @@ class ProjectControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
 
     //clean up
     projectRepository.deleteAll();

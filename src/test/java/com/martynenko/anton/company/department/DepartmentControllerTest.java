@@ -51,7 +51,7 @@ class DepartmentControllerTest {
   }
 
   @Test
-  void onCreateWithDuplicationShouldReturnBadRequest() throws Exception {
+  void onCreateWithDuplicationShouldReturnConflict() throws Exception {
     departmentRepository.save(new DepartmentDTO(null,"Department1").createInstance());
 
     //duplication of unique title
@@ -61,7 +61,7 @@ class DepartmentControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
   }
 
   @Test
@@ -85,7 +85,7 @@ class DepartmentControllerTest {
   * */
   @Test
   @Transactional(propagation = Propagation.NEVER)
-  void onUpdateWithDuplicationShouldReturnBadRequest() throws Exception {
+  void onUpdateWithDuplicationShouldReturnConflict() throws Exception {
     long id = departmentRepository.save(new DepartmentDTO(null,"Department1").createInstance()).getId();
     departmentRepository.save(new DepartmentDTO(null,"Department2").createInstance());
 
@@ -96,7 +96,7 @@ class DepartmentControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
 
     //clean up after yourself
     departmentRepository.deleteAll();

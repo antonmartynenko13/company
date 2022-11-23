@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 @Slf4j
-public class CrudExceptionHandler extends ResponseEntityExceptionHandler {
+public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler
   protected ResponseEntity<Object> handleException(
@@ -31,7 +31,7 @@ public class CrudExceptionHandler extends ResponseEntityExceptionHandler {
         //for h2 compatibility
         || ex instanceof InvalidDataAccessApiUsageException) {
       return handleExceptionInternal(ex, null,
-          new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+          new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
     return handleExceptionInternal(ex, null,

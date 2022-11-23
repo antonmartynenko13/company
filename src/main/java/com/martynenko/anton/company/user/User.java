@@ -40,10 +40,6 @@ public class User {
   @Column(nullable = false, unique = true)
   private String email;
 
-  //not reserved word in PosgreSQL
-  @Column(nullable = false)
-  private String password;
-
   @Column(name = "job_title", nullable = false)
   private String jobTitle;
 
@@ -58,7 +54,6 @@ public class User {
     this.firstName = userDTO.firstName();
     this.lastName = userDTO.lastName();
     this.email = userDTO.email();
-    this.password = userDTO.password();
     this.jobTitle = userDTO.jobTitle();
     this.department = department;
   }
@@ -68,7 +63,6 @@ public class User {
         this.firstName,
         this.lastName,
         this.email,
-        this.password,
         this.jobTitle,
         this.department.getId());
   }
@@ -77,7 +71,6 @@ public class User {
     this.firstName = userDTO.firstName();
     this.lastName = userDTO.lastName();
     this.email = userDTO.email();
-    this.password = userDTO.password();
     this.jobTitle = userDTO.jobTitle();
     this.department = department;
     return this;

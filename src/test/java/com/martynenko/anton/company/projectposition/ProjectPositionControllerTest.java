@@ -355,7 +355,6 @@ class ProjectPositionControllerTest {
         "First",
         "Last",
         "email@domain.com",
-        "PASSWORD",
         "employee",
         department.getId()
     ).createInstance(department));
