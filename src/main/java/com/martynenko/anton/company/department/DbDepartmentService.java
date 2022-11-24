@@ -1,5 +1,6 @@
 package com.martynenko.anton.company.department;
 
+
 import java.util.Collection;
 import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ public class DbDepartmentService implements DepartmentService{
 
   @Override
   public Department create(DepartmentDTO newDepartment) {
-    //return departmentRepository.save(new Department(newDepartment));
     return departmentRepository.save(newDepartment.createInstance());
   }
 

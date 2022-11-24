@@ -23,7 +23,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Propagation;
@@ -40,6 +42,9 @@ class ProjectControllerTest {
 
   @Autowired
   MockMvc mockMvc;
+
+  @MockBean
+  private JwtDecoder jwtDecoder;
 
   @Autowired
   ProjectRepository projectRepository;
@@ -127,7 +132,6 @@ class ProjectControllerTest {
         .createInstance());
 
     //duplication of unique title
-    System.out.println(projectRepository.findAll());
 
     Map<String, String> payloadMap = Map.of(
         "title", "Project2",

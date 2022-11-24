@@ -1,15 +1,20 @@
 package com.martynenko.anton.company.project;
 
+import com.martynenko.anton.company.projectposition.ProjectPosition;
 import java.time.LocalDate;
+import java.util.Collection;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.ToString.Exclude;
 
 @Entity
 @Getter
@@ -26,6 +31,10 @@ public class Project {
   @Column(nullable = false)
   private LocalDate startDate;
 
+  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private Collection<ProjectPosition> projectPositions;
 
   private LocalDate endDate;
 

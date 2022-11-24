@@ -3,6 +3,7 @@ package com.martynenko.anton.company.user;
 import com.martynenko.anton.company.department.Department;
 import com.martynenko.anton.company.projectposition.ProjectPosition;
 import java.util.Collection;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,9 +24,9 @@ import lombok.ToString;
 @Entity
 @Table(name = "users") //user is reserved word
 @Getter
-@EqualsAndHashCode(exclude = "projectPosition")
+@EqualsAndHashCode
 @NoArgsConstructor
-@ToString(exclude = "projectPosition")
+@ToString
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +48,9 @@ public class User {
   @JoinColumn(name = "department_id")
   private Department department;
 
-  @OneToOne(mappedBy = "user")
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private ProjectPosition projectPosition;
 
   public User(UserDTO userDTO, Department department) {

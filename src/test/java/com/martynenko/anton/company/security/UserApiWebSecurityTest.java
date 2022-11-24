@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
@@ -25,6 +27,9 @@ class UserApiWebSecurityTest {
 
   @Autowired
   MockMvc mockMvc;
+
+  @MockBean
+  private JwtDecoder jwtDecoder;
 
 
   @Test
@@ -42,10 +47,10 @@ class UserApiWebSecurityTest {
   }
 
   @Test
-  void onUnauthorizedImportUsersShouldReturnForbidden() throws Exception {
+  void onUnauthorizedImportUsersShouldReturnUnauthorized() throws Exception {
     mockMvc.perform(multipart(contextPath + "import"))
         .andDo(print())
-        .andExpect(status().isForbidden());
+        .andExpect(status().isUnauthorized());
   }
 
   @Test
