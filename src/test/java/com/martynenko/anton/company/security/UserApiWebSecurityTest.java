@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,8 @@ class UserApiWebSecurityTest {
   void onUnauthorizedGetUsersAvailableShouldReturnUnauthorized() throws Exception {
     this.mockMvc.perform(get(contextPath + "available"))
         .andDo(print())
-        .andExpect(status().isUnauthorized());
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -50,7 +52,8 @@ class UserApiWebSecurityTest {
   void onUnauthorizedImportUsersShouldReturnUnauthorized() throws Exception {
     mockMvc.perform(multipart(contextPath + "import"))
         .andDo(print())
-        .andExpect(status().isUnauthorized());
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test

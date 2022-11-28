@@ -102,7 +102,8 @@ class ProjectPositionControllerTest {
               .contentType(MediaType.APPLICATION_JSON)
               .content(this.mapper.writeValueAsString(payloadMap)))
           .andDo(print())
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
     }
 
     @Test
@@ -125,7 +126,8 @@ class ProjectPositionControllerTest {
               .contentType(MediaType.APPLICATION_JSON)
               .content(this.mapper.writeValueAsString(payloadMap)))
           .andDo(print())
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
     }
 
     @Test
@@ -197,7 +199,8 @@ class ProjectPositionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(payloadMap)))
             .andDo(print())
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
       }
 
 
@@ -233,7 +236,8 @@ class ProjectPositionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(payloadMap)))
             .andDo(print())
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
       }
 
        @Test
@@ -256,7 +260,8 @@ class ProjectPositionControllerTest {
                  .contentType(MediaType.APPLICATION_JSON)
                  .content(this.mapper.writeValueAsString(payloadMap)))
              .andDo(print())
-             .andExpect(status().isNotFound());
+             .andExpect(status().isNotFound())
+             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
        }
 
        @Test
@@ -290,7 +295,8 @@ class ProjectPositionControllerTest {
 
          this.mockMvc.perform(get(contextPath + missingId))
              .andDo(print())
-             .andExpect(status().isNotFound());
+             .andExpect(status().isNotFound())
+             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
        }
 
        @Test
@@ -322,7 +328,8 @@ class ProjectPositionControllerTest {
 
          this.mockMvc.perform(delete(contextPath + missingId))
              .andDo(print())
-             .andExpect(status().isNotFound());
+             .andExpect(status().isNotFound())
+             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
        }
 
 

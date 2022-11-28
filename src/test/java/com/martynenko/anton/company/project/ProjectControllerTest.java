@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.martynenko.anton.company.department.DepartmentDTO;
 import java.time.LocalDate;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false) //disable security
 @Transactional
@@ -79,7 +81,8 @@ class ProjectControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -96,7 +99,8 @@ class ProjectControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -143,7 +147,8 @@ class ProjectControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
 
     //clean up
     projectRepository.deleteAll();
@@ -156,9 +161,6 @@ class ProjectControllerTest {
     projectRepository.save(new ProjectDTO(null,"Project2", LocalDate.now(), LocalDate.now())
         .createInstance());
 
-    //duplication of unique title
-    System.out.println(projectRepository.findAll());
-
     Map<String, String> payloadMap = Map.of(
         "startDate", "2018-07-22",
         "endDate", "2019-07-22"
@@ -168,7 +170,8 @@ class ProjectControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -184,7 +187,8 @@ class ProjectControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -205,7 +209,8 @@ class ProjectControllerTest {
 
     this.mockMvc.perform(get(contextPath + missingId))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -224,7 +229,8 @@ class ProjectControllerTest {
 
     this.mockMvc.perform(delete(contextPath + missingId))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
 

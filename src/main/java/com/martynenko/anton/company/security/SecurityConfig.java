@@ -1,19 +1,27 @@
-package com.martynenko.anton.company.config;
+package com.martynenko.anton.company.security;
 
-import java.util.Collection;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 @Configuration
+@Import(SecurityProblemSupport.class)
 public class SecurityConfig {
 
+  private final SecurityProblemSupport problemSupport;
+
+  @Autowired
+  public SecurityConfig(final SecurityProblemSupport problemSupport) {
+    this.problemSupport = problemSupport;
+  }
+
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
 
     http
         .cors()
@@ -27,6 +35,10 @@ public class SecurityConfig {
                 .antMatchers("/").permitAll()
         )
         .oauth2ResourceServer().jwt();
+    //Problem support
+    http.exceptionHandling()
+        .authenticationEntryPoint(problemSupport)
+        .accessDeniedHandler(problemSupport);
     return http.build();
   }
 }

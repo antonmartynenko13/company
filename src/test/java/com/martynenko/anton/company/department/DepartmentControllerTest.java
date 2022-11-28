@@ -66,7 +66,8 @@ class DepartmentControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -101,7 +102,8 @@ class DepartmentControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
 
     //clean up after yourself
     departmentRepository.deleteAll();
@@ -117,7 +119,8 @@ class DepartmentControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
 
@@ -138,7 +141,8 @@ class DepartmentControllerTest {
 
     this.mockMvc.perform(get(contextPath + missingId))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -155,7 +159,8 @@ class DepartmentControllerTest {
 
     this.mockMvc.perform(delete(contextPath + missingId))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test

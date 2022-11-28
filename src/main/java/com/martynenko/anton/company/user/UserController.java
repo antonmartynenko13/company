@@ -15,10 +15,12 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Tag(name = "users")
+@Validated
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -41,71 +44,72 @@ public class UserController {
   private final CsvHelper<UserDTO> csvHelper;
 
   @Autowired
-  public UserController(UserService userService, CsvHelper<UserDTO> csvHelper) {
+  public UserController(final UserService userService, final CsvHelper<UserDTO> csvHelper) {
     this.userService = userService;
     this.csvHelper = csvHelper;
   }
 
   @CrudCreateWithRelations
   @PostMapping("")
-  public ResponseEntity<UserDTO> create(@RequestBody UserDTO created, HttpServletRequest request){
-    log.info("CREATED CONTROLLER");
+  public ResponseEntity<UserDTO> create(@RequestBody @Valid UserDTO created,
+      HttpServletRequest request) {
     created =  userService.create(created).toDTO();
     return ResponseEntity.created(URI.create(request.getRequestURI() + created.id())).build();
   }
 
-  @CrudUpdateWithRelations
-  @PutMapping("/{id}")
-  public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO updated){
-    return ResponseEntity.ok(userService.update(id, updated).toDTO());
-  }
-
-  @CrudGetOne
-  @GetMapping("/{id}")
-  public ResponseEntity<UserDTO> getOne(@PathVariable Long id){
-    return ResponseEntity.ok(userService.get(id).toDTO());
-  }
-
-  @CrudGetAll
-  @GetMapping("")
-  public ResponseEntity<Collection<UserDTO>> getAll(){
-    List<UserDTO> userDTOList = userService.listAll().stream().map(User::toDTO).toList();
-    return ResponseEntity.ok(userDTOList);
-  }
-
-  @CrudDelete
-  @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable Long id){
-    userService.delete(id);
-    return ResponseEntity.noContent().build();
-  }
-
-  /*@GetAvailable
-  @GetMapping(value = "/available", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Map<String, Object>>> getAvailable(@RequestParam(defaultValue = "0") final long period){
-    List<Map<String, Object>> userDTOList
-        = userService.listAvailable(period).stream().map(user -> convertUserToView(user, period)).toList();
-    return ResponseEntity.ok(userDTOList);
-  }*/
-
-  @GetAvailable
-  @GetMapping(value = "/available", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<AvailableUserView>> getAvailable(@RequestParam(defaultValue = "0") final long period){
-    List<AvailableUserView> userDTOList
-        = userService.listAvailable(period).stream().map(user -> convertUserToView(user, period)).toList();
-    return ResponseEntity.ok(userDTOList);
-  }
-
   @ImportWithCsv
-  @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
-  public ResponseEntity<?> create(@RequestParam MultipartFile file){
+  @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> create(@RequestParam final MultipartFile file) {
 
     Collection<UserDTO> userDTOS = csvHelper.readAll(file, UserDTO.class);
     userService.create(userDTOS);
     return ResponseEntity.ok().build();
   }
 
-  public AvailableUserView convertUserToView(User user, long period) {
+  @CrudUpdateWithRelations
+  @PutMapping("/{id}")
+  public ResponseEntity<UserDTO> update(@PathVariable final Long id,
+      @RequestBody @Valid UserDTO updated) {
+    return ResponseEntity.ok(userService.update(id, updated).toDTO());
+  }
+
+  @CrudGetOne
+  @GetMapping("/{id}")
+  public ResponseEntity<UserDTO> getOne(@PathVariable final Long id) {
+    return ResponseEntity.ok(userService.get(id).toDTO());
+  }
+
+  @CrudGetAll
+  @GetMapping("")
+  public ResponseEntity<Collection<UserDTO>> getAll() {
+    List<UserDTO> userDTOList = userService.listAll().stream().map(User::toDTO).toList();
+    log.debug("Found {} users", userDTOList.size());
+    return ResponseEntity.ok(userDTOList);
+  }
+
+  @CrudDelete
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> delete(@PathVariable final Long id) {
+    userService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetAvailable
+  @GetMapping(value = "/available", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Collection<AvailableUserView>> getAvailable(
+      @RequestParam(defaultValue = "0") final long period) {
+    List<AvailableUserView> userDTOList
+        = userService.listAvailable(period)
+        .stream().map(user -> convertUserToView(user, period)).toList();
+    log.debug("Found {} available users", userDTOList.size());
+    return ResponseEntity.ok(userDTOList);
+  }
+
+  /*
+  We turn the user's DTO into an extended DTO,
+  which will include additional information about its availability.
+  */
+  public AvailableUserView convertUserToView(final User user, final long period) {
 
     ProjectPosition projectPosition = user.getProjectPosition();
 
@@ -114,7 +118,7 @@ public class UserController {
     LocalDate endPeriodDate = startPeriodDate.plusDays(period);
     LocalDate availableTo = null;
 
-    if (projectPosition != null){
+    if (projectPosition != null) {
       LocalDate positionStartDate = projectPosition.getPositionStartDate();
       LocalDate positionEndDate = projectPosition.getPositionEndDate();
 
@@ -122,7 +126,8 @@ public class UserController {
         // if project position start date is during period he will be available from now
 
         if (endPeriodDate.isAfter(positionStartDate)) {
-          // if project position start date is during period he will be available till planned project starts
+          // if project position start date is during period
+          // he will be available till planned project starts
           availableTo = positionStartDate;
         }
       } else {

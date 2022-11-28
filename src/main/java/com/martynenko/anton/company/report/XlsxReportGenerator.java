@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -13,8 +16,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-
-public class XlsxReportGenerator implements ReportGenerator{
+@Slf4j
+@RequiredArgsConstructor
+@ToString
+public class XlsxReportGenerator implements ReportGenerator {
   private final String headerFontName;
 
   private final short headerFontHeight;
@@ -27,18 +32,8 @@ public class XlsxReportGenerator implements ReportGenerator{
 
   private final boolean contentFontIsBold;
 
-  private XlsxReportGenerator(String headerFontName, short headerFontHeight, boolean headerFontIsBold,
-      String contentFontName, short contentFontHeight, boolean contentFontIsBold) {
-    this.headerFontName = headerFontName;
-    this.headerFontHeight = headerFontHeight;
-    this.headerFontIsBold = headerFontIsBold;
-    this.contentFontName = contentFontName;
-    this.contentFontHeight = contentFontHeight;
-    this.contentFontIsBold = contentFontIsBold;
-  }
-
   public static class ReportGeneratorBuilder {
-
+    //default values
     private String headerFontName = "Arial";
 
     private short headerFontHeight = 14;
@@ -51,38 +46,38 @@ public class XlsxReportGenerator implements ReportGenerator{
 
     private boolean contentFontIsBold = false;
 
-    public ReportGeneratorBuilder headerFontName(String fontName) {
+    public ReportGeneratorBuilder headerFontName(final String fontName) {
       this.headerFontName = fontName;
       return this;
     }
 
-    public ReportGeneratorBuilder headerFontHeight(short headerFontHeight) {
+    public ReportGeneratorBuilder headerFontHeight(final short headerFontHeight) {
       this.headerFontHeight = headerFontHeight;
       return this;
     }
 
-    public ReportGeneratorBuilder headerFontIsBold(boolean headerFontIsBold) {
+    public ReportGeneratorBuilder headerFontIsBold(final boolean headerFontIsBold) {
       this.headerFontIsBold = headerFontIsBold;
       return this;
     }
 
-    public ReportGeneratorBuilder contentFont(String fontName) {
+    public ReportGeneratorBuilder contentFont(final String fontName) {
       this.contentFontName = fontName;
       return this;
     }
 
-    public ReportGeneratorBuilder contentFontHeight(short contentFontHeight) {
+    public ReportGeneratorBuilder contentFontHeight(final short contentFontHeight) {
       this.contentFontHeight = contentFontHeight;
       return this;
     }
 
-    public ReportGeneratorBuilder contentFontIsBold(boolean contentFontIsBold) {
+    public ReportGeneratorBuilder contentFontIsBold(final boolean contentFontIsBold) {
       this.contentFontIsBold = contentFontIsBold;
       return this;
     }
 
     XlsxReportGenerator build() {
-      return new XlsxReportGenerator(
+      XlsxReportGenerator xlsxReportGenerator =  new XlsxReportGenerator(
           this.headerFontName,
           this.headerFontHeight,
           this.headerFontIsBold,
@@ -90,16 +85,21 @@ public class XlsxReportGenerator implements ReportGenerator{
           this.contentFontHeight,
           this.contentFontIsBold
           );
+      log.debug("Created new XlsxReportGenerator: {}", xlsxReportGenerator);
+      return xlsxReportGenerator;
     }
   }
 
 
   @Override
-  public byte[] generate(Map<String, List<String[]>> contentBySheets) {
-    if (contentBySheets == null) throw new IllegalStateException("Content is required");
+  public byte[] generate(final Map<String, List<String[]>> contentBySheets) {
+    log.info("Generating new xlsx report...");
+    if (contentBySheets == null) {
+      throw new IllegalStateException("Content is required");
+    }
 
-    try(Workbook workbook = new XSSFWorkbook()){
-      for (String sheetName: contentBySheets.keySet()) {
+    try (Workbook workbook = new XSSFWorkbook()) {
+      for (String sheetName : contentBySheets.keySet()) {
         Sheet sheet = workbook.createSheet(sheetName);
 
         List<String[]> content = contentBySheets.get(sheetName);
@@ -142,12 +142,12 @@ public class XlsxReportGenerator implements ReportGenerator{
     }
   }
 
-  private CellStyle getCellStyle(Workbook workbook, boolean isHeader) {
-    CellStyle cellStyle = workbook.createCellStyle();
+  private CellStyle getCellStyle(final Workbook workbook, final boolean isHeader) {
     XSSFFont font = ((XSSFWorkbook) workbook).createFont();
     font.setFontName(isHeader ? this.headerFontName : this.contentFontName);
     font.setFontHeightInPoints(isHeader ? this.headerFontHeight : this.contentFontHeight);
     font.setBold(isHeader ? this.headerFontIsBold : this.contentFontIsBold);
+    CellStyle cellStyle = workbook.createCellStyle();
     cellStyle.setFont(font);
     cellStyle.setAlignment(HorizontalAlignment.CENTER);
     return cellStyle;

@@ -16,7 +16,7 @@ CREATE TABLE users (
    email text NOT NULL UNIQUE,
    --password text NOT NULL,
    job_title text NOT NULL,
-   department_id integer REFERENCES department
+   department_id integer NOT NULL REFERENCES department
 );
 
 CREATE TABLE project (

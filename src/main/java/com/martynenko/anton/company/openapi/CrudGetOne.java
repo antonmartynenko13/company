@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 @ApiResponses(value = {
     @ApiResponse(responseCode = HttpURLConnection.HTTP_OK + ""),
     @ApiResponse(responseCode = HttpURLConnection.HTTP_NOT_FOUND + "",
-        content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE)),
+        content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE)),
 })
 public @interface CrudGetOne {
 

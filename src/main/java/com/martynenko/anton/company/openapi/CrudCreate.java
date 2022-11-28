@@ -22,7 +22,8 @@ import org.springframework.http.MediaType;
     @ApiResponse(responseCode = HttpURLConnection.HTTP_CREATED + "", content = @Content,
         headers = @Header(name = "Location", description = "Location of created", required = true)),
     @ApiResponse(responseCode = HttpURLConnection.HTTP_CONFLICT + "",
-        description = "Duplicate a unique field", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
+        description = "Duplicate a unique field",
+        content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE))
 })
 public @interface CrudCreate {
 

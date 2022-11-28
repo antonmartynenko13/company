@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
         content = @Content(mediaType = XLSX_CONTENT_TYPE)
     ),
     @ApiResponse(responseCode = HttpURLConnection.HTTP_NOT_FOUND + "",
-        content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE)),
+        content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE)),
 })
 public @interface GetLastReport {
 

@@ -1,7 +1,5 @@
 package com.martynenko.anton.company.project;
 
-import com.martynenko.anton.company.user.User;
-import com.martynenko.anton.company.user.UserDTO;
 import java.util.Collection;
 
 public interface ProjectService {
@@ -11,6 +9,7 @@ public interface ProjectService {
   Project update(Long id, ProjectDTO updated);
 
   Project get(Long id);
+
   Collection<Project> listAll();
 
   void delete(Long id);

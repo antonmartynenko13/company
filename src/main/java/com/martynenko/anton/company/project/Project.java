@@ -1,5 +1,7 @@
 package com.martynenko.anton.company.project;
 
+import static com.martynenko.anton.company.utils.Constants.DATABASE_STRINGS_MAX_SIZE;
+
 import com.martynenko.anton.company.projectposition.ProjectPosition;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -10,11 +12,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.ToString.Exclude;
 
 @Entity
 @Getter
@@ -27,8 +30,11 @@ public class Project {
   private Long id;
 
   @Column(unique = true, nullable = false)
+  @NotNull
+  @Size(min = 1, max = DATABASE_STRINGS_MAX_SIZE)
   private String title;
   @Column(nullable = false)
+  @NotNull
   private LocalDate startDate;
 
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
@@ -38,7 +44,7 @@ public class Project {
 
   private LocalDate endDate;
 
-  public Project(ProjectDTO projectDTO) {
+  public Project(final ProjectDTO projectDTO) {
     this.title = projectDTO.title();
     this.startDate = projectDTO.startDate();
     this.endDate = projectDTO.endDate();
@@ -51,7 +57,7 @@ public class Project {
         this.endDate);
   }
 
-  public Project update(ProjectDTO projectDTO) {
+  public Project update(final ProjectDTO projectDTO) {
     this.title = projectDTO.title();
     this.startDate = projectDTO.startDate();
     this.endDate = projectDTO.endDate();

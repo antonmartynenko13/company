@@ -1,5 +1,7 @@
 package com.martynenko.anton.company.projectposition;
 
+import static com.martynenko.anton.company.utils.Constants.DATABASE_STRINGS_MAX_SIZE;
+
 import com.martynenko.anton.company.project.Project;
 import com.martynenko.anton.company.user.User;
 import java.time.LocalDate;
@@ -11,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,25 +33,33 @@ public class ProjectPosition {
 
   @OneToOne
   @JoinColumn(name = "user_id", nullable = false)
+  @NotNull
   private User user;
 
   @ManyToOne
   @JoinColumn(name = "project_id", nullable = false)
+  @NotNull
   private Project project;
 
   @Column(name = "position_start_date", nullable = false)
+  @NotNull
   private LocalDate positionStartDate;
 
   @Column(name = "position_end_date")
   private LocalDate positionEndDate;
 
   @Column(name = "position_title", nullable = false)
+  @NotNull
+  @Size(min = 1, max = DATABASE_STRINGS_MAX_SIZE)
   private String positionTitle;
 
   @Column(nullable = false)
+  @NotNull
+  @Size(min = 1, max = DATABASE_STRINGS_MAX_SIZE)
   private String occupation;
 
-  public ProjectPosition(ProjectPositionDTO projectPositionDTO, User user, Project project) {
+  public ProjectPosition(final ProjectPositionDTO projectPositionDTO,
+      final User user, final Project project) {
     this.user = user;
     this.project = project;
     this.positionStartDate = projectPositionDTO.positionStartDate();
@@ -66,7 +78,8 @@ public class ProjectPosition {
         this.occupation);
   }
 
-  public ProjectPosition update(ProjectPositionDTO projectPositionDTO, User user, Project project) {
+  public ProjectPosition update(final ProjectPositionDTO projectPositionDTO,
+      final User user, final Project project) {
     this.user = user;
     this.project = project;
     this.positionStartDate = projectPositionDTO.positionStartDate();

@@ -113,7 +113,8 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -133,7 +134,8 @@ class UserControllerTest {
             .content(this.mapper.writeValueAsString(payloadMap))
             )
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -153,7 +155,8 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -228,7 +231,8 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
 
     userRepository.deleteAll();
     departmentRepository.deleteAll();
@@ -259,7 +263,8 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -288,7 +293,8 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -307,7 +313,8 @@ class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.mapper.writeValueAsString(payloadMap)))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -336,7 +343,8 @@ class UserControllerTest {
 
     this.mockMvc.perform(get(contextPath + missingId))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -363,7 +371,8 @@ class UserControllerTest {
 
     this.mockMvc.perform(delete(contextPath + missingId))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
 
@@ -523,7 +532,8 @@ class UserControllerTest {
 
     mockMvc.perform(multipart(contextPath + "import").file(importFile))
         .andDo(print())
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
   @Test
@@ -568,10 +578,57 @@ class UserControllerTest {
 
     mockMvc.perform(multipart(contextPath + "import").file(importFile))
         .andDo(print())
-        .andExpect(status().isConflict());
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
   }
 
-  void createDepartmentUserProjectAndPosition(LocalDate projectStartDate, LocalDate projectEndDate) {
+  @Test
+  void onImportWithNotValidShouldReturnBadRequest() throws Exception {
+    Department department
+        = departmentRepository.saveAndFlush(new DepartmentDTO(
+        null,
+        "Some department"
+    ).createInstance());
+
+    User user = userRepository.saveAndFlush(new UserDTO(
+        null,
+        "First",
+        "Last",
+        "email@domain.com",
+        "employee",
+        department.getId()
+    ).createInstance(department));
+
+    String header = "firstName,"
+        + "lastName,"
+        + "email,"
+        + "jobTitle,"
+        + "departmentId";
+
+    String value = "Firstname1,"
+        + "Lastname2,"
+        //Not valid email
+        + "emaildomaincom,"
+        + "Title 1,"
+        + department.getId();
+
+    String fileName = "file";
+
+    MockMultipartFile importFile
+        = new MockMultipartFile(
+        fileName,
+        fileName + ".csv",
+        MediaType.TEXT_PLAIN_VALUE,
+        (header + "\n" + value).getBytes()
+    );
+
+    mockMvc.perform(multipart(contextPath + "import").file(importFile))
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+  }
+
+  void createDepartmentUserProjectAndPosition(final LocalDate projectStartDate, final LocalDate projectEndDate) {
 
     Department department
         = departmentRepository.saveAndFlush(new DepartmentDTO(

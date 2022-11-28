@@ -6,30 +6,32 @@ import com.martynenko.anton.company.user.User;
 import com.martynenko.anton.company.user.UserService;
 import java.util.Collection;
 import javax.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @Primary
-public class DbProjectPositionService implements ProjectPositionService{
+public class DbProjectPositionService implements ProjectPositionService {
   private final ProjectPositionRepository projectPositionRepository;
-  
   private final UserService userService;
-  
   private final ProjectService projectService;
 
   @Autowired
-  public DbProjectPositionService(ProjectPositionRepository projectPositionRepository,
-      UserService userService, ProjectService projectService) {
+  public DbProjectPositionService(final ProjectPositionRepository projectPositionRepository,
+      final UserService userService, final ProjectService projectService) {
     this.projectPositionRepository = projectPositionRepository;
     this.userService = userService;
     this.projectService = projectService;
   }
 
   @Override
-  public ProjectPosition create(ProjectPositionDTO newProjectPosition) {
+  public ProjectPosition create(final ProjectPositionDTO newProjectPosition) {
+    log.debug("Creating new projectPosition: {}", newProjectPosition);
     User user = userService.get(newProjectPosition.userId());
+
     Project project = projectService.get(newProjectPosition.projectId());
 
     ProjectPosition projectPosition = newProjectPosition.createInstance(user, project);
@@ -37,7 +39,8 @@ public class DbProjectPositionService implements ProjectPositionService{
   }
 
   @Override
-  public ProjectPosition update(Long id, ProjectPositionDTO updated) {
+  public ProjectPosition update(final Long id, final ProjectPositionDTO updated) {
+    log.debug("Updating projectPosition with id {}: {}", id,  updated);
     User user = userService.get(updated.userId());
     Project project = projectService.get(updated.projectId());
 
@@ -46,19 +49,22 @@ public class DbProjectPositionService implements ProjectPositionService{
   }
 
   @Override
-  public ProjectPosition get(Long id) {
+  public ProjectPosition get(final Long id) {
+    log.debug("Requesting projectPosition with id {}", id);
     return projectPositionRepository.findById(id).orElseThrow(
-        () -> new EntityNotFoundException(id + "")
+        () -> new EntityNotFoundException("No project position with id " + id)
     );
   }
 
   @Override
   public Collection<ProjectPosition> listAll() {
+    log.debug("Requesting all projectPositions");
     return projectPositionRepository.findAll();
   }
 
   @Override
-  public void delete(Long id) {
+  public void delete(final Long id) {
+    log.debug("Deleting projectPosition with id {}", id);
     get(id);
     projectPositionRepository.deleteById(id);
   }

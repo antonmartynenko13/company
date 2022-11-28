@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class ReportConfiguration {
   @Bean
   XlsxReportGenerator reportGenerator() {
+    //default building
     return new XlsxReportGenerator.ReportGeneratorBuilder().build();
   }
 
