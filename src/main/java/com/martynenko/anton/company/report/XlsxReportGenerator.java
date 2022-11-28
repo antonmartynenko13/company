@@ -2,6 +2,7 @@ package com.martynenko.anton.company.report;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -90,6 +91,12 @@ public class XlsxReportGenerator implements ReportGenerator {
     }
   }
 
+  /**
+   * The content submitted for report generation organized in Map
+   * Every kay in map should be converted into nested sheet (may match department for example)
+   * Every value is a List of sheet's row, organized in array
+   * list.get(0) always contains header values array
+   * */
 
   @Override
   public byte[] generate(final Map<String, List<String[]>> contentBySheets) {
@@ -99,6 +106,8 @@ public class XlsxReportGenerator implements ReportGenerator {
     }
 
     try (Workbook workbook = new XSSFWorkbook()) {
+
+      //Process nested sheets step by step
       for (String sheetName : contentBySheets.keySet()) {
         Sheet sheet = workbook.createSheet(sheetName);
 
@@ -110,6 +119,7 @@ public class XlsxReportGenerator implements ReportGenerator {
 
         CellStyle headerStyle = getCellStyle(workbook, true);
 
+        //Fill header's cells
         for (int i = 0; i < headerArray.length; i++) {
           Cell headerCell = header.createCell(i);
           headerCell.setCellValue(headerArray[i]);
@@ -118,6 +128,7 @@ public class XlsxReportGenerator implements ReportGenerator {
 
         CellStyle contentStyle = getCellStyle(workbook, false);
 
+        //Fill content cells, row by row
         for (int i = 1; i < content.size(); i++) {
           Row row = sheet.createRow(i);
 
@@ -138,7 +149,7 @@ public class XlsxReportGenerator implements ReportGenerator {
       workbook.write(baos);
       return baos.toByteArray();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
