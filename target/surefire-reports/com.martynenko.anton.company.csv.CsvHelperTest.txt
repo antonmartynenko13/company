@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.martynenko.anton.company.csv.CsvHelperTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.346 s - in com.martynenko.anton.company.csv.CsvHelperTest
